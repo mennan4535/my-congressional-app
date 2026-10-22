@@ -1,0 +1,1470 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emergency Ready - Portal & AI Assistant</title>
+
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+
+  <style>
+    :root {
+      --oxblood: #7c2325;
+      --sage: #c7dea4;
+      --forest: #313e2c;
+      --soft-gray: #9ba398;
+      --stone: #f9f3ee;
+      --charcoal: #323232;
+      --accent-red: #d83f2e;
+    }
+
+    * {
+      scroll-behavior: smooth;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: var(--stone);
+      color: var(--charcoal);
+    }
+
+    .font-inter {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .letter-tight {
+      letter-spacing: -0.05em;
+    }
+
+    .nav-link {
+      opacity: 0.6;
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nav-link:hover,
+    .nav-link:focus {
+      opacity: 1;
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      transition: background-color 300ms ease, transform 200ms ease, box-shadow 300ms ease;
+      position: relative;
+    }
+
+    .btn-primary:hover {
+      background-color: #5a1a1c;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .page {
+      display: none;
+      opacity: 0;
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .page.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Gallery Styles */
+    .featured-gallery-wrapper {
+      position: relative;
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    .featured-gallery-controls {
+      display: flex;
+      gap: 12px;
+      z-index: 20;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .featured-gallery-arrow {
+      width: 40px;
+      height: 40px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f7f1ec !important;
+      transition: color 200ms ease;
+    }
+
+    .featured-gallery-arrow:hover {
+      color: rgba(247, 241, 236, 0.8) !important;
+    }
+
+    .featured-gallery {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      width: 100%;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding-top: 20px;
+      scrollbar-width: none;
+    }
+
+    .featured-gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .featured-card {
+      position: relative;
+      overflow: hidden;
+      transition: all 500ms cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+      border-radius: 2px;
+    }
+
+    @media (min-width: 1024px) {
+      .featured-card-1,
+      .featured-card-2,
+      .featured-card-3 {
+        width: calc((100% - 48px) / 3);
+        height: 420px;
+        min-width: calc((100% - 48px) / 3);
+      }
+
+      .featured-card:hover {
+        height: 580px;
+        z-index: 10;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .featured-card-1,
+      .featured-card-2,
+      .featured-card-3 {
+        width: 280px;
+        height: 360px;
+        min-width: 280px;
+      }
+    }
+
+    .overlay {
+      opacity: 0;
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .featured-card:hover .overlay {
+      opacity: 1;
+    }
+
+    /* Quiz Styles */
+    .quiz-container {
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+      padding: 30px;
+      box-sizing: border-box;
+      margin: 0 auto;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background-color: #e0e0e0;
+      border-radius: 3px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background-color: #7c2325;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .option-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      background-color: #f0f4f8;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover {
+      background-color: #e1e9f3;
+    }
+
+    .option-btn.selected {
+      border-color: #7c2325;
+      background-color: #e8f0fe;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+    }
+
+    button.nav-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .btn-hint {
+      background-color: #f39c12;
+      color: white;
+    }
+
+    .btn-next {
+      background-color: #7c2325;
+      color: white;
+    }
+
+    .btn-next:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .hint-text {
+      display: none;
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 15px;
+      border-left: 4px solid #ffc107;
+      font-size: 0.9rem;
+    }
+
+    .score-badge {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #7c2325;
+      margin: 20px 0;
+    }
+
+    .btn-home {
+      background-color: #7c2325;
+      color: white;
+      padding: 12px 25px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+      padding: 10px 0;
+    }
+
+    /* Medical Card Styling */
+    .medical-card-container {
+      max-width: 450px;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+
+    .medical-card {
+      background-color: #ffffff;
+      border: 2px solid #cc0000;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .medical-card-header {
+      background-color: #cc0000;
+      color: white;
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+
+    .medical-profile-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .medical-profile-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #ccc;
+      background-color: #eee;
+    }
+
+    .medical-blood-badge {
+      font-size: 24px;
+      font-weight: bold;
+      color: #cc0000;
+    }
+
+    .medical-field {
+      margin-bottom: 12px;
+    }
+
+    .medical-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #666;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .medical-value {
+      font-size: 15px;
+      font-weight: bold;
+      color: #111;
+    }
+
+    .medical-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .medical-btn:hover {
+      background-color: #218838;
+    }
+
+    .medical-print-btn {
+      background-color: #007bff;
+    }
+
+    .medical-print-btn:hover {
+      background-color: #0069d9;
+    }
+
+    .medical-form {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 20px;
+    }
+
+    .medical-form h3 {
+      margin-top: 0;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+
+    .medical-form label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .medical-form input,
+    .medical-form select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .medical-card,
+      .medical-card * {
+        visibility: visible;
+      }
+
+      .medical-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        border: 2px solid #cc0000;
+      }
+    }
+
+    /* AI Assistant & Alarm Styles */
+    .btn-auxilio {
+      background-color: #dc2626;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 12px 24px;
+      border: 2px solid #fca5a5;
+      border-radius: 30px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.3s ease;
+      margin-top: 15px;
+      display: inline-block;
+      outline: none;
+    }
+
+    .btn-auxilio:hover {
+      background-color: #b91c1c;
+      transform: scale(1.03);
+    }
+
+    @keyframes neonRojo {
+      0%, 100% {
+        background-color: #ff0000;
+        border-color: #ffffff;
+        box-shadow: 0 0 10px #ff0000, 0 0 25px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000;
+        text-shadow: 0 0 8px #ffffff;
+      }
+      50% {
+        background-color: #7f1d1d;
+        border-color: #fca5a5;
+        box-shadow: 0 0 5px #ff0000, 0 0 12px #ff0000;
+        text-shadow: none;
+      }
+    }
+
+    .neon-activo {
+      animation: neonRojo 0.6s infinite alternate !important;
+    }
+
+    .card-section {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .chat-container {
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+      overflow: hidden;
+      max-width: 600px;
+      margin: 20px auto 0;
+    }
+
+    .chat-box {
+      height: 320px;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: #ffffff;
+    }
+
+    .message {
+      padding: 10px 14px;
+      border-radius: 10px;
+      max-width: 80%;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
+
+    .message.user {
+      background: #2563eb;
+      color: white;
+      align-self: flex-end;
+    }
+
+    .message.bot {
+      background: #f1f5f9;
+      color: #1e293b;
+      align-self: flex-start;
+      border: 1px solid #e2e8f0;
+    }
+
+    .chat-input-area {
+      display: flex;
+      padding: 10px;
+      background: #f8fafc;
+      gap: 10px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      outline: none;
+      color: #333;
+    }
+
+    .chat-input-area button {
+      padding: 10px 18px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .chat-input-area button:hover {
+      background: #1d4ed8;
+    }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0px) rotate(-4deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+
+    @keyframes sombraPulsar {
+      0%, 100% { transform: scale(1); opacity: 0.35; }
+      50% { transform: scale(0.6); opacity: 0.12; }
+    }
+
+    .anim-flotar { animation: flotar 3.2s infinite ease-in-out; }
+    .anim-sombra { animation: sombraPulsar 3.2s infinite ease-in-out; }
+    .robot-box { transition: transform 0.3s ease, filter 0.3s ease; }
+    .robot-box:hover { filter: drop-shadow(0 10px 15px rgba(56, 189, 248, 0.4)); }
+  </style>
+</head>
+
+<body class="min-h-screen" style="background: rgb(124, 35, 37);">
+
+  <!-- Navigation Bar -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-[#f9f3ee]/95 backdrop-blur-sm">
+    <div class="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16">
+      <div class="flex items-center justify-between h-16 md:h-20">
+        <a href="#" onclick="navigateTo('home'); return false;"
+          class="font-inter font-bold text-lg md:text-xl tracking-tight text-[#323232]"
+          style="color: rgb(50, 50, 50); font-weight: 700; font-size: 24px;">
+          Emergency Ready
+        </a>
+
+        <!-- Desktop Nav -->
+        <div class="hidden md:flex items-center gap-8 lg:gap-12">
+          <a href="#" onclick="navigateTo('home'); return false;"
+            class="nav-link font-inter text-sm font-medium uppercase tracking-wide text-[#323232]"
+            style="color: rgb(50, 50, 50); font-weight: 700; font-size: 13px;">Home</a>
+          <a href="#" onclick="navigateTo('collection'); return false;"
+            class="nav-link font-inter text-sm font-medium uppercase tracking-wide text-[#323232]"
+            style="color: rgb(50, 50, 50); font-weight: 700; font-size: 13px;">Articles + More</a>
+          <a href="#" onclick="navigateTo('about'); return false;"
+            class="nav-link font-inter text-sm font-medium uppercase tracking-wide text-[#323232]"
+            style="color: rgb(50, 50, 50); font-weight: 700; font-size: 13px;">Emergency Medical ID</a>
+          <a href="#" onclick="navigateTo('editorial'); return false;"
+            class="nav-link font-inter text-sm font-medium uppercase tracking-wide text-[#323232]"
+            style="color: rgb(50, 50, 50); font-weight: 700; font-size: 13px;">AI Assistant</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PAGE 1: HOME -->
+  <main id="page-home" class="page active">
+    <!-- Hero Section -->
+    <section class="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+      <div class="absolute inset-0">
+        <img alt="Emergency Background" class="w-full h-full object-cover" loading="eager"
+          style="background: rgb(125, 35, 38);">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30"></div>
+      </div>
+      <div class="relative z-10 text-center px-6">
+        <h1 class="font-inter font-bold text-5xl md:text-7xl lg:text-8xl uppercase text-[#f9f3ee] fade-in"
+          style="letter-spacing: -0.04em; color: rgb(249, 243, 238);">
+          Emergency Ready
+        </h1>
+      </div>
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <i data-lucide="chevron-down" class="w-8 h-8 text-[#f9f3ee]/60"></i>
+      </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-16" style="background: rgb(125, 35, 38);">
+      <div class="max-w-[1600px] mx-auto">
+        <div class="flex items-center justify-between mb-12 md:mb-16 gap-8">
+          <h2 class="font-inter font-bold text-3xl md:text-4xl lg:text-5xl uppercase letter-tight"
+            style="color: rgb(247, 241, 236); font-weight: 400; font-size: 37px;">Important</h2>
+          <div class="featured-gallery-controls flex gap-3">
+            <button class="featured-gallery-arrow" id="gallery-arrow-left" aria-label="Scroll gallery left"
+              onclick="scrollGallery('featured-gallery', -1)">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <button class="featured-gallery-arrow" id="gallery-arrow-right" aria-label="Scroll gallery right"
+              onclick="scrollGallery('featured-gallery', 1)">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="featured-gallery-wrapper">
+          <div class="featured-gallery" id="featured-gallery">
+            <!-- Product 1 -->
+            <article class="featured-card featured-card-1 cursor-pointer" onclick="navigateTo('product')">
+              <img alt="Emergency contacts" class="w-full h-full object-cover" loading="lazy"
+                src="https://images.unsplash.com/photo-1596550190504-8cd94a80b3bb?q=80&w=1074&auto=format&fit=crop">
+              <div class="overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6">
+                <div class="overlay-text">
+                  <h3 class="font-inter font-bold text-lg md:text-xl uppercase letter-tight text-white">Primary Emergency Contacts</h3>
+                </div>
+              </div>
+            </article>
+
+            <!-- Product 2 -->
+            <article class="featured-card featured-card-2 cursor-pointer" onclick="navigateTo('emergencyGuideline')">
+              <img alt="Emergencies and how to act" class="w-full h-full object-cover" loading="lazy"
+                src="https://plus.unsplash.com/premium_photo-1679431435997-36855fe295ae?q=80&w=880&auto=format&fit=crop">
+              <div class="overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6">
+                <div class="overlay-text">
+                  <h3 class="font-inter font-bold text-lg md:text-2xl uppercase letter-tight text-white">Emergencies & How to Act</h3>
+                </div>
+              </div>
+            </article>
+
+            <!-- Product 3 (Quiz) -->
+            <article class="featured-card featured-card-3 cursor-pointer" onclick="navigateTo('quiz')">
+              <img alt="Quiz" class="w-full h-full object-cover" loading="lazy"
+                src="https://images.unsplash.com/photo-1652077859695-de2851a95620?q=80&w=580&auto=format&fit=crop">
+              <div class="overlay absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex flex-col justify-end p-6">
+                <div class="overlay-text">
+                  <h3 class="font-inter font-bold text-lg md:text-xl uppercase letter-tight text-white">QUIZ</h3>
+                  <p class="mt-2 text-sm text-white/80">Test your knowledge</p>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature Block -->
+    <section class="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-16" style="background: rgb(245, 240, 235);">
+      <div class="max-w-[1600px] mx-auto">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div class="fade-in">
+            <h2 class="font-inter font-bold text-3xl md:text-4xl lg:text-5xl uppercase letter-tight"
+              style="color: rgb(0, 0, 0); font-weight: 400; font-size: 37px;">Be prepared</h2>
+            <p class="mt-6 md:mt-8 text-lg md:text-xl leading-relaxed max-w-xl" style="color: rgb(0, 0, 0);">
+              Get ready for unexpected disasters or severe weather by following guidelines from credible resources.
+            </p>
+            <p class="mt-6 md:mt-8 text-lg md:text-xl leading-relaxed max-w-xl" style="color: rgb(0, 0, 0);">
+              <i>"When disaster strikes, seconds count. The moment someone is injured, your immediate response can mean
+                the difference between life and death. Many people freeze, overwhelmed by fear and uncertainty,
+                believing they lack the expertise to help. But here's the truth:
+                <mark>Doing something is always better than doing nothing.</mark>"</i>
+            </p>
+            <p class="mt-2 font-semibold text-sm">— First Aid: Your need-to-know guide</p>
+            <button onclick="navigateTo('collection')"
+              class="btn-primary mt-8 md:mt-10 px-8 py-4 text-white font-inter font-semibold text-sm uppercase tracking-wide rounded"
+              style="background: rgb(123, 40, 39);">
+              Explore the articles
+            </button>
+          </div>
+          <div class="fade-in overflow-hidden">
+            <img alt="First aid illustration"
+              class="w-full aspect-[4/3] object-cover transition-transform duration-500 ease-out hover:scale-105"
+              loading="lazy"
+              src="https://plus.unsplash.com/premium_photo-1666298863696-8e8da5d85f2b?q=80&w=1170&auto=format&fit=crop">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 2: ARTICLES + MORE -->
+  <main id="page-collection" class="page">
+    <section class="pt-24 md:pt-32 pb-16 md:pb-24 px-6 md:px-12 lg:px-16" style="background: rgb(168, 55, 53);">
+      <header class="mb-16 md:mb-20 fade-in">
+        <h1 class="font-inter font-bold text-5xl md:text-6xl lg:text-7xl uppercase letter-tight text-white">Articles</h1>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Article 1 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://www.redcross.org/take-a-class/resources/articles/the-three-cs-of-first-aid-check-call-care'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Actions</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Steps to save lives</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">Emergencies can strike at anytime, anywhere, and to anyone. When
+              faced with such a situation, staying calm and collected is key.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+
+        <!-- Article 2 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://emergency.yale.edu/be-prepared'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Emergency Management</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Be Prepared</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">The key to preparing for an emergency is to develop a plan,
+              evaluate the situation, and respond to maximize safety.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+
+        <!-- Article 3 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://www.ready.gov/'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Ready</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Plan ahead to prevent disasters</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">Know what hazards affect your area, how to get emergency alerts,
+              and where to evacuate with your family.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+
+        <!-- Article 4 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://www.osha.gov/emergency-preparedness'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Safety</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Emergency Preparedness and Response</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">Preparing in advance, staying calm, and knowing whether to
+              evacuate or shelter in place can help protect workers and save lives.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+
+        <!-- Article 5 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://www.redcross.org/get-help/how-to-prepare-for-emergencies/types-of-emergencies.html'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Learn</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Emergency Preparedness Tips</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">Prepare your family, your pets and your home for common
+              emergencies and natural disasters. Read below for information about emergencies that can occur where you live.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+
+        <!-- Article 6 -->
+        <article class="cursor-pointer group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between min-h-[250px]"
+          onclick="window.location.href='https://www.cdc.gov/Emergency/index.html'">
+          <div>
+            <span class="text-xs uppercase tracking-widest text-[#9ba398] font-inter mb-2 block">Read</span>
+            <h3 class="font-inter font-bold text-2xl uppercase letter-tight text-[#323232] group-hover:text-[#a83735] transition-colors duration-200">
+              Prevent</h3>
+            <p class="text-sm text-[#323232]/70 mt-4">Protect yourself and your loved ones by knowing how to prepare for
+              natural disasters and how to stay safe during and after them.</p>
+          </div>
+          <div class="mt-6 flex items-center text-sm font-bold text-[#a83735] uppercase tracking-wider">
+            Read article <span class="transform group-hover:translate-x-2 transition-transform duration-200 ml-2">→</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 3: PRIMARY EMERGENCY CONTACTS -->
+  <main id="page-product" class="page">
+    <section class="pt-24 md:pt-32 pb-16 md:pb-24">
+      <div class="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16">
+        <button onclick="navigateTo('home')"
+          class="inline-flex items-center gap-2 text-sm text-[#f9f3ee] hover:text-[#323232] transition-colors mb-8">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Back to Home</span>
+        </button>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+          <div class="space-y-6">
+            <div class="w-full bg-[#c7dea4] flex items-center justify-center overflow-hidden">
+              <img alt="Ambulance Emergency" class="w-full h-auto object-contain"
+                src="https://images.unsplash.com/photo-1707390590682-60599cd59218?q=80&w=869&auto=format&fit=crop">
+            </div>
+          </div>
+
+          <div class="lg:pt-8 text-white">
+            <h1 class="font-inter font-bold text-3xl md:text-4xl uppercase letter-tight">Primary Emergency Contacts</h1>
+            <p class="mt-2 text-lg text-[#9ba398]">Every household should set up three primary emergency contacts</p>
+
+            <div class="mt-8 pt-8 border-t border-white/10">
+              <h2 class="font-inter font-semibold text-sm uppercase tracking-wide text-[#90a9c3]">Details</h2>
+              <p class="mt-4 leading-relaxed">When a life-threatening situation occurs, 911 is the immediate response.
+                Emergency contacts provide the personal, medical, and legal support that follow.</p>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-white/10">
+              <h2 class="font-inter font-semibold text-sm uppercase tracking-wide text-[#90a9c3]">Examples</h2>
+              <ul class="mt-4 space-y-2 list-disc list-inside text-gray-200">
+                <li>A primary family member or guardian</li>
+                <li>A trusted local friend or relative</li>
+                <li>An out-of-town contact</li>
+              </ul>
+            </div>
+
+            <div class="mt-10 flex flex-col sm:flex-row gap-4">
+              <button class="px-8 py-4 font-inter uppercase tracking-wide rounded bg-white text-[#7c2325] font-semibold"
+                onclick="window.location.href='https://www.redcross.org/content/dam/redcross/get-help/pdfs/American-Red-Cross-Emergency-Contact-Card.pdf'">
+                Go to Example
+              </button>
+              <button class="px-8 py-4 font-inter uppercase tracking-wide rounded bg-white text-[#7c2325] font-semibold"
+                onclick="window.location.href='https://www.mayoclinic.org/first-aid/emergency-health-information/basics/art-20134333'">
+                Learn More
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 4: EMERGENCIES & HOW TO ACT -->
+  <main id="page-emergencyGuideline" class="page">
+    <section class="pt-24 md:pt-32 pb-16 md:pb-24 text-white">
+      <div class="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16">
+        <button onclick="navigateTo('home')"
+          class="inline-flex items-center gap-2 text-sm text-[#9ba398] hover:text-white transition-colors mb-8">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Back to Home</span>
+        </button>
+
+        <h1 class="font-inter font-bold text-3xl md:text-4xl uppercase letter-tight mb-8">Emergency Guidelines</h1>
+
+        <div class="space-y-4 max-w-2xl">
+          <details class="bg-white/10 p-4 rounded">
+            <summary class="text-xl">Cardiac Arrest</summary>
+            <div class="mt-2 space-y-2 text-sm">
+              <p><strong>Step 1:</strong> Tap person and speak loudly. If unresponsive and not breathing, call 911 and get an AED.</p>
+              <p><strong>Step 2:</strong> Lay flat on their back on a firm surface.</p>
+              <p><strong>Step 3:</strong> Perform CPR compressions in the center of the chest (100–120 per minute).</p>
+            </div>
+          </details>
+
+          <details class="bg-white/10 p-4 rounded">
+            <summary class="text-xl">Burns</summary>
+            <div class="mt-2 space-y-2 text-sm">
+              <p><strong>Step 1:</strong> Move away from heat source.</p>
+              <p><strong>Step 2:</strong> Run cool tap water over burn for 10–20 mins (never ice).</p>
+              <p><strong>Step 3:</strong> Cover loosely with clean gauze or plastic wrap.</p>
+            </div>
+          </details>
+
+          <details class="bg-white/10 p-4 rounded">
+            <summary class="text-xl">Building on Fire</summary>
+            <div class="mt-2 space-y-2 text-sm">
+              <p><strong>Step 1:</strong> Crawl low under smoke toward exits.</p>
+              <p><strong>Step 2:</strong> Check doors with the back of your hand before opening.</p>
+              <p><strong>Step 3:</strong> Evacuate using stairs (never elevators).</p>
+            </div>
+          </details>
+        
+          <!-- New Button Section -->
+        <div class="mt-10 max-w-2xl">
+          <a href="https://www.redcross.org/take-a-class" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#7c2325] font-inter font-semibold text-sm uppercase tracking-wide rounded hover:bg-gray-100 transition-colors shadow-lg">
+            Get Trained From Proffesionals
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+        </div>  
+        
+          <!-- New Button Section -->
+        <div class="mt-10 max-w-2xl">
+          <a href="https://firstaidguide.wpenginepowered.com/" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#7c2325] font-inter font-semibold text-sm uppercase tracking-wide rounded hover:bg-gray-100 transition-colors shadow-lg">
+            View American Red Cross First Aid Guidelines
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+        </div>
+        
+        <!-- New Button Section -->
+        <div class="mt-10 max-w-2xl">
+          <a href="https://www.mayoclinic.org/first-aid" target="_blank" rel="noopener noreferrer" 
+             class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#7c2325] font-inter font-semibold text-sm uppercase tracking-wide rounded hover:bg-gray-100 transition-colors shadow-lg">
+            View First aid Mayo Clinic
+            <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+        </div>
+          
+        </div>
+        <div class="mt-12 pt-8 border-t border-white/10 max-w-2xl">
+          <h2 class="font-inter font-semibold text-lg uppercase tracking-wide text-[#90a9c3]">Pocket Guide: PAS Protocol</h2>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li><strong>P - Protect:</strong> Ensure the area is safe before approaching.</li>
+            <li><strong>A - Alert:</strong> Call 911 / 112 immediately.</li>
+            <li><strong>S - Succor / Save:</strong> Provide basic first aid.</li>
+          </ul>
+        </div>
+
+        
+        
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 5: QUIZ -->
+  <main id="page-quiz" class="page">
+    <section class="pt-24 md:pt-32 pb-16 md:pb-24">
+      <div class="max-w-[1600px] mx-auto px-6 md:px-12 lg:px-16">
+        <button onclick="navigateTo('home')"
+          class="inline-flex items-center gap-2 text-sm text-[#f9f3ee] hover:text-white transition-colors mb-8">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i> <span>Back to Home</span>
+        </button>
+
+        <!-- QUIZ START -->
+        <div class="quiz-container">
+          <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+          </div>
+
+          <div id="quiz-content">
+            <!-- Content generated dynamically -->
+          </div>
+        </div>
+        <!-- QUIZ END -->
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 6: EMERGENCY MEDICAL ID -->
+  <main id="page-about" class="page">
+    <section class="py-16 md:py-24 lg:py-32 px-6 md:px-12 lg:px-16" style="background: rgb(249, 243, 238);">
+      <div class="max-w-[1600px] mx-auto">
+        <h1 class="font-inter font-bold text-4xl md:text-5xl lg:text-6xl uppercase letter-tight text-[#323232] mb-12"
+          style="color: rgb(124, 35, 37);">Medical ID</h1>
+
+        <div class="medical-card-container">
+          <!-- DISPLAY CARD -->
+          <div class="medical-card">
+            <div class="medical-card-header">EMERGENCY MEDICAL ID</div>
+
+            <div class="medical-profile-container">
+              <img id="displayPhoto" class="medical-profile-img" src="https://via.placeholder.com/70" alt="Profile Photo">
+              <span class="medical-blood-badge" id="displayBlood">O+</span>
+            </div>
+
+            <div class="medical-field">
+              <span class="medical-label">Full Name</span>
+              <span class="medical-value" id="displayName">Jane Doe</span>
+            </div>
+
+            <div class="medical-field">
+              <span class="medical-label">DOB</span>
+              <span class="medical-value" id="displayDob">1995-08-20</span>
+            </div>
+
+            <div class="medical-field">
+              <span class="medical-label">Allergies</span>
+              <span class="medical-value" id="displayAllergies">Peanuts, Latex</span>
+            </div>
+
+            <div class="medical-field">
+              <span class="medical-label">Emergency Contact</span>
+              <span class="medical-value" id="displayContact">Maria Diaz (Mother) - 111-222-3333</span>
+            </div>
+
+            <div class="medical-field">
+              <span class="medical-label">Primary Doctor</span>
+              <span class="medical-value" id="displayDoctor">Dr. Parker - 666-777-0123</span>
+            </div>
+          </div>
+
+          <!-- PRINT BUTTON -->
+          <button type="button" class="medical-btn medical-print-btn" onclick="window.print()">Print Card</button>
+
+          <!-- EDIT FORM -->
+          <form id="medicalForm" class="medical-form" onsubmit="event.preventDefault();">
+            <h3>Edit Card Details</h3>
+
+            <label for="photoInput">Profile Photo:</label>
+            <input type="file" id="photoInput" accept="image/*" onchange="loadPhoto(event)">
+
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" value="Jane Doe">
+
+            <label for="dob">DOB:</label>
+            <input type="date" id="dob" value="1995-08-20">
+
+            <label for="blood">Blood Type:</label>
+            <select id="blood">
+              <option value="O+" selected>O+</option>
+              <option value="O-">O-</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+            </select>
+
+            <label for="allergies">Allergies:</label>
+            <input type="text" id="allergies" value="Peanuts, Latex">
+
+            <label for="contact">Emergency Contact:</label>
+            <input type="text" id="contact" value="Maria Diaz (Mother) - 111-222-3333">
+
+            <label for="doctor">Doctor:</label>
+            <input type="text" id="doctor" value="Dr. Parker - 666-777-0123">
+
+            <button type="button" class="medical-btn" onclick="updateCard()">Update Card</button>
+          </form>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- PAGE 7: AI Assistant Robo -->
+  <main id="page-editorial" class="page">
+    <section class="pt-24 md:pt-32 pb-20 md:pb-32 px-6 md:px-12 lg:px-16" style="background: rgb(124, 35, 37); min-height: 100vh;">
+      <div class="max-w-[1600px] mx-auto text-white">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+          <div>
+            <h1 class="font-inter font-bold text-4xl md:text-5xl lg:text-6xl uppercase letter-tight">AI Assistant, Robo</h1>
+            <p class="mt-6 text-base leading-relaxed">Safety initiatives, community preparedness programs, and emergency tools.</p>
+          </div>
+          <button id="btn-auxilio" class="btn-auxilio mt-4 md:mt-0" onclick="toggleEmergencyAlarm()">
+            🔔 ACTIVATE EMERGENCY ALARM
+          </button>
+        </div>
+
+        <section id="asistente" class="card-section text-gray-800">
+          <h2 class="font-bold text-2xl mb-2">Virtual Emergency Assistant</h2>
+          <p class="subtitle text-gray-600 mb-4">Robo is your digital assistant for emergency preparedness, basic first aid, and accident prevention.</p>
+
+          <div class="chat-container">
+            <div id="chat-box" class="chat-box">
+              <div class="message bot">Hello! I am your emergency guidance assistant. How can I help you today?</div>
+            </div>
+
+            <div class="chat-input-area">
+              <input type="text" id="user-input" placeholder="e.g., What to do for a mild burn?" />
+              <button id="send-btn" onclick="sendMessage()">Send</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- FLOATING ROBOT -->
+    <div class="fixed bottom-4 right-4 z-50 flex flex-col items-center select-none robot-box">
+      <div class="anim-flotar w-20 h-24 sm:w-24 sm:h-28">
+        <svg viewBox="0 0 320 380" class="w-full h-full drop-shadow-md">
+          <g transform="rotate(-6 160 190)">
+            <!-- Ears -->
+            <rect x="32" y="115" width="28" height="48" rx="12" fill="#DCDCD8" />
+            <rect x="258" y="162" width="28" height="48" rx="12" fill="#DCDCD8" />
+            <!-- Top Antenna -->
+            <path d="M 140 42 C 140 25, 175 25, 175 42 Z" fill="#ECECE8" />
+            <!-- Head Helmet -->
+            <ellipse cx="160" cy="150" rx="122" ry="110" fill="#ECECE8" />
+            <!-- Dark Visor -->
+            <ellipse cx="165" cy="152" rx="92" ry="82" fill="#212427" />
+            <!-- Eyes -->
+            <ellipse cx="138" cy="140" rx="16" ry="22" fill="#ECECE8" />
+            <ellipse cx="198" cy="152" rx="15" ry="20" fill="#ECECE8" />
+            <!-- Smile -->
+            <path d="M 158 174 Q 172 186 186 174" fill="none" stroke="#ECECE8" stroke-width="4.5" stroke-linecap="round" />
+            <!-- Torso -->
+            <path d="M 112 220 C 112 195, 202 212, 200 235 L 184 282 C 184 295, 120 288, 114 268 Z" fill="#212427" />
+            <path d="M 116 250 C 116 250, 188 262, 185 280 L 122 270 Z" fill="#ECECE8" />
+            <!-- Left Arm -->
+            <path d="M 112 225 Q 75 230 45 248" fill="none" stroke="#212427" stroke-width="12" stroke-linecap="round" />
+            <circle cx="42" cy="250" r="26" fill="#ECECE8" />
+            <path d="M 28 260 L 38 250" stroke="#212427" stroke-width="6" stroke-linecap="round" />
+            <!-- Right Arm -->
+            <path d="M 190 235 Q 235 235 268 210" fill="none" stroke="#212427" stroke-width="11" stroke-linecap="round" />
+            <ellipse cx="272" cy="206" rx="22" ry="18" fill="#ECECE8" transform="rotate(-25 272 206)" />
+            <circle cx="288" cy="195" r="9" fill="#ECECE8" />
+            <circle cx="295" cy="208" r="8" fill="#ECECE8" />
+            <!-- Legs -->
+            <path d="M 130 270 L 102 322" stroke="#212427" stroke-width="14" stroke-linecap="round" />
+            <g transform="rotate(-20 90 325)">
+              <rect x="65" y="305" width="56" height="42" rx="20" fill="#ECECE8" />
+              <path d="M 72 342 Q 92 352 114 340 Z" fill="#212427" />
+            </g>
+            <path d="M 165 275 L 176 325" stroke="#212427" stroke-width="14" stroke-linecap="round" />
+            <g transform="rotate(-10 170 335)">
+              <rect x="145" y="315" width="56" height="42" rx="20" fill="#ECECE8" />
+              <path d="M 152 352 Q 172 362 194 350 Z" fill="#212427" />
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="anim-sombra w-12 h-2.5 bg-black/30 rounded-full blur-[2px] mt-1"></div>
+    </div>
+  </main>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Initialize Icons
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    // Page Navigation
+    function navigateTo(pageId) {
+      if (pageId.startsWith('product-')) {
+        pageId = 'product';
+      }
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      const targetPage = document.getElementById('page-' + pageId);
+      if (targetPage) {
+        targetPage.classList.add('active');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      observeFadeIn();
+    }
+
+    // Gallery Scroll
+    function scrollGallery(galleryId, direction) {
+      const gallery = document.getElementById(galleryId);
+      if (!gallery) return;
+      const scrollAmount = 400;
+      gallery.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
+
+    // Fade-in animation
+    function observeFadeIn() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      observeFadeIn();
+
+      const userInput = document.getElementById('user-input');
+      if (userInput) {
+        userInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            sendMessage();
+          }
+        });
+      }
+    });
+
+    // Medical ID Card Script
+    function loadPhoto(event) {
+      var reader = new FileReader();
+      reader.onload = function () {
+        var output = document.getElementById('displayPhoto');
+        output.src = reader.result;
+      };
+      if (event.target.files && event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+      }
+    }
+
+    function updateCard() {
+      document.getElementById("displayName").innerText = document.getElementById("name").value || "---";
+      document.getElementById("displayDob").innerText = document.getElementById("dob").value || "---";
+      document.getElementById("displayBlood").innerText = document.getElementById("blood").value;
+      document.getElementById("displayAllergies").innerText = document.getElementById("allergies").value || "None";
+      document.getElementById("displayContact").innerText = document.getElementById("contact").value || "---";
+      document.getElementById("displayDoctor").innerText = document.getElementById("doctor").value || "---";
+    }
+
+    // Quiz Script Logic
+    const questions = [
+      {
+        question: "1. What is the universal emergency phone number in the United States?",
+        options: ["112", "911", "999"],
+        correct: 1,
+        hint: "It starts with a 9!"
+      },
+      {
+        question: "2. Someone next to you is choking, grabbing their neck, and cannot talk or breathe. What should you perform?",
+        options: ["The Heimlich maneuver (abdominal thrusts)", "Give them a big glass of soda", "Pat them gently on the arm", "Ignore them"],
+        correct: 0,
+        hint: "This technique uses quick upward pushes above the belly button to pop out trapped objects."
+      },
+      {
+        question: "3. What is the best thing to put on a fresh, minor heat burn?",
+        options: ["Ice cubes directly from the freezer", "Toothpaste or butter", "Cool, running tap water", "Java"],
+        correct: 2,
+        hint: "Keep it simple and clean—just turn on the sink faucet!"
+      },
+      {
+        question: "4. If a hallway is filling with dark smoke during a fire, how should you escape?",
+        options: ["Crawl low on your hands and knees", "Run upright as fast as you can", "Take the elevator to the ground floor", "Stay where you are and open all windows"],
+        correct: 0,
+        hint: "Staying low keeps you below the dangerous smoke line where breathable air stays!"
+      },
+      {
+        question: "5. In the emergency PAS protocol, what does the first letter P stand for?",
+        options: ["Panic", "Protect (ensure the area is safe)", "Push", "Secure"],
+        correct: 1,
+        hint: "Before helping anyone, you must make sure YOU don't get hurt too."
+      }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+    let selectedOption = null;
+
+    function loadQuestion() {
+      const q = questions[currentIndex];
+      const quizContent = document.getElementById("quiz-content");
+      if (!quizContent) return;
+
+      const percentage = (currentIndex / questions.length) * 100;
+      document.getElementById("progress-bar").style.width = percentage + "%";
+
+      quizContent.innerHTML = `
+        <h2 class="text-xl font-bold mb-4">${q.question}</h2>
+        <div class="options-container">
+          ${q.options.map((opt, i) => `
+            <button class="option-btn" onclick="selectOption(${i})">${opt}</button>
+          `).join('')}
+        </div>
+        <div class="controls">
+          <button class="nav-btn btn-hint" onclick="toggleHint()">Hint</button>
+          <button class="nav-btn btn-next" id="btn-next" disabled onclick="nextQuestion()">Next</button>
+        </div>
+        <div class="hint-text" id="hint-text">${q.hint}</div>
+      `;
+    }
+
+    function selectOption(index) {
+      selectedOption = index;
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach((btn, i) => {
+        btn.classList.toggle('selected', i === index);
+      });
+      document.getElementById('btn-next').disabled = false;
+    }
+
+    function toggleHint() {
+      const hint = document.getElementById("hint-text");
+      hint.style.display = (hint.style.display === "none" || hint.style.display === "") ? "block" : "none";
+    }
+
+    function nextQuestion() {
+      if (selectedOption === questions[currentIndex].correct) {
+        score++;
+      }
+      currentIndex++;
+      selectedOption = null;
+
+      if (currentIndex < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      document.getElementById("progress-bar").style.width = "100%";
+      document.getElementById("quiz-content").innerHTML = `
+        <div class="result-screen text-center">
+          <h2 class="text-2xl font-bold mb-2">Quiz Finished!</h2>
+          <p>Your score is:</p>
+          <div class="score-badge">${score} / ${questions.length}</div>
+          <button class="btn-home" onclick="restartQuiz()">Restart Quiz</button>
+        </div>
+      `;
+    }
+
+    function restartQuiz() {
+      currentIndex = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    // Initialize the quiz
+    loadQuestion();
+
+    /* ========================================== */
+    /* AI ASSISTANT CHAT LOGIC (FULL ENGLISH)    */
+    /* ========================================== */
+    function sendMessage() {
+      const userInput = document.getElementById("user-input");
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      // 1. Display user message
+      addChatMessage(text, "user");
+      userInput.value = "";
+
+      // 2. Display processing indicator
+      const botMessageElement = addChatMessage("Analyzing case...", "bot");
+
+      // 3. Simulate AI response delay (0.8 seconds)
+      setTimeout(() => {
+        const response = respondAsAI(text.toLowerCase());
+        botMessageElement.textContent = response;
+        const chatBox = document.getElementById("chat-box");
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }, 800);
+    }
+
+    function addChatMessage(text, sender) {
+      const chatBox = document.getElementById("chat-box");
+      const div = document.createElement("div");
+      div.classList.add("message", sender);
+      div.textContent = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+      return div;
+    }
+
+    // SMART FIRST AID ENGINE (ENGLISH & SPANISH SUPPORT)
+    function respondAsAI(query) {
+      if (query.includes("burn") || query.includes("fire") || query.includes("hot") || query.includes("quemadur") || query.includes("queme")) {
+        return "🔥 Mild burns: Cool the area with cool running tap water for 10-15 minutes. Do not use ice, toothpaste, or oils. Cover loosely with a clean, dry gauze.";
+      } 
+      else if (query.includes("cut") || query.includes("bleed") || query.includes("wound") || query.includes("corte") || query.includes("sangr") || query.includes("herida")) {
+        return "🩸 Bleeding control: Apply direct pressure to the wound with a clean cloth or sterile gauze for at least 5 continuous minutes. Elevate the affected area if possible.";
+      } 
+      else if (query.includes("chok") || query.includes("asphyx") || query.includes("drown") || query.includes("atragant") || query.includes("asfixia")) {
+        return "🚨 Choking: If the person cannot cough or speak, perform the Heimlich maneuver by giving quick upward abdominal thrusts. If they lose consciousness, call emergency services (911) immediately.";
+      } 
+      else if (query.includes("fractur") || query.includes("bone") || query.includes("sprain") || query.includes("ankle") || query.includes("hueso") || query.includes("esguince")) {
+        return "🦴 Fractures & Sprains: Immobilize the affected joint or area without trying to realign the bone. Apply cold (ice wrapped in a towel) to reduce swelling and seek immediate medical care.";
+      } 
+      else if (query.includes("kit") || query.includes("first aid kit") || query.includes("supplies") || query.includes("botiquin")) {
+        return "🧰 Basic First Aid Kit: Should contain bandages, sterile gauze, antiseptic wipes, scissors, nitrile/latex gloves, a thermometer, adhesive bandages, and emergency contact numbers.";
+      } 
+      else if (query.includes("hello") || query.includes("hi") || query.includes("hey") || query.includes("hola") || query.includes("good morning")) {
+        return "👋 Hello! I am your first aid assistant. You can ask me what to do for burns, cuts, choking, injuries, or what to include in a first aid kit.";
+      } 
+      else if (query.includes("how are you") || query.includes("what's up") || query.includes("como estas")) {
+        return "👋 Hello! I am ready to help you. What emergency or first aid question do you have today?";
+      } 
+      else if (query.includes("first") || query.includes("accident") || query.includes("pas") || query.includes("protocol")) {
+        return "🩸 Apply the PAS protocol: Protect the accident scene to prevent further danger, Alert emergency services (911), and Succor/save victims if you have basic knowledge.";
+      } 
+      else if (query.includes("heart attack") || query.includes("stroke") || query.includes("chest pain") || query.includes("infarto")) {
+        return "❤️ Heart attack signs: Crushing chest pain or pressure that may spread to the left arm, neck, or jaw, accompanied by cold sweat, shortness of breath, and dizziness. Call 911 immediately!";
+      } 
+      else if (query.includes("doctor") || query.includes("replace") || query.includes("website")) {
+        return "No. The information provided is strictly educational and for initial guidance. In any severe situation, always consult qualified healthcare personnel.";
+      } 
+      else {
+        return "ℹ️ For severe emergencies or if the person is unconscious, stay calm and call your local emergency line (911) immediately. For specific medical queries, professional evaluation is recommended.";
+      }
+    }
+
+    /* ========================================== */
+    /* EMERGENCY ALARM & AUDIO API LOGIC          */
+    /* ========================================== */
+    let audioCtx = null;
+    let oscillator = null;
+    let gainNode = null;
+    let sirenInterval = null;
+    let alarmActive = false;
+
+    function toggleEmergencyAlarm() {
+      const btn = document.getElementById("btn-auxilio");
+      alarmActive = !alarmActive;
+
+      if (alarmActive) {
+        btn.classList.add("neon-activo");
+        btn.textContent = "🚨 TURN OFF EMERGENCY ALARM";
+        startSiren();
+      } else {
+        btn.classList.remove("neon-activo");
+        btn.textContent = "🔔 ACTIVATE EMERGENCY ALARM";
+        stopSiren();
+      }
+    }
+
+    function startSiren() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      
+      oscillator = audioCtx.createOscillator();
+      gainNode = audioCtx.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      
+      oscillator.type = 'square';
+      gainNode.gain.value = 0.1; 
+      
+      oscillator.start();
+      
+      let isHighFreq = true;
+      sirenInterval = setInterval(() => {
+        oscillator.frequency.value = isHighFreq ? 800 : 400;
+        isHighFreq = !isHighFreq;
+      }, 300);
+    }
+
+    function stopSiren() {
+      if (oscillator) {
+        oscillator.stop();
+        oscillator.disconnect();
+      }
+      if (sirenInterval) {
+        clearInterval(sirenInterval);
+      }
+    }
+  </script>
+</body>
+
+</html>
